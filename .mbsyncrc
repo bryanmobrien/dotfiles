@@ -1,0 +1,78 @@
+IMAPAccount gmail
+Host imap.gmail.com
+User bryan.m.obrien@gmail.com
+PassCmd "gpg --quiet --for-your-eyes-only --no-tty --decrypt ~/.password-store/mutt-wizard-gmail.gpg"
+AuthMechs LOGIN 
+SSLType STARTTLS
+SSLType IMAPS
+SSLVersions TLSv1.2
+#CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+IMAPstore gmail-remote
+Account gmail
+
+MailDirStore gmail-local
+SubFolders Verbatim
+Path ~/.local/share/mail/gmail/
+Inbox ~/.local/share/mail/gmail/INBOX
+
+Channel gmail
+Far :gmail-remote:
+Near :gmail-local:
+Patterns * ![Gmail]* "[Gmail]/All Mail" "[Gmail]/Drafts" "[Gmail]/Spam" "[Gmail]/Starred" "[Gmail]/Sent Mail" "[Gmail]/Trash" 
+Create Both
+SyncState * 
+Sync PullNew PullDelete Push
+Expunge Both
+
+IMAPAccount yahoo 
+Host imap.mail.yahoo.com
+User jayjoethecocoa@yahoo.com
+PassCmd "gpg --quiet --for-your-eyes-only --no-tty --decrypt ~/.password-store/mutt-wizard-yahoo.gpg"
+#CertificateFile ~/yahoo-imap-cert.pem
+AuthMechs LOGIN
+SSLType STARTTLS
+SSLType IMAPS
+SSLVersion TLSv1.2
+
+IMAPstore yahoo-remote
+Account yahoo
+
+MailDirStore yahoo-local
+SubFolders Verbatim
+Path ~/.local/share/mail/yahoo/
+Inbox ~/.local/share/mail/yahoo/Inbox
+
+Channel yahoo
+Far :yahoo-remote:
+Near :yahoo-local:
+Patterns * 
+Create Both
+SyncState * 
+Sync All
+Expunge Both
+
+IMAPAccount protonmail
+Host 127.0.0.1 
+Port 1143
+User thecocoa@pm.me 
+PassCmd "gpg --quiet --for-your-eyes-only --no-tty --decrypt ~/.password-store/mutt-wizard-protonmail.gpg"
+CertificateFile ~/protonmail_bridge_certificate.pem
+SSLType STARTTLS
+
+IMAPstore protonmail-remote
+Account protonmail
+
+MailDirStore protonmail-local
+SubFolders Verbatim
+Path ~/.local/share/mail/protonmail/
+Inbox ~/.local/share/mail/protonmail/INBOX
+
+Channel protonmail
+Far :protonmail-remote:
+Near :protonmail-local:
+Patterns * !"All Mail" 
+Create Both
+SyncState * 
+Sync All
+Expunge Both

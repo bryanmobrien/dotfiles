@@ -1,9 +1,9 @@
+#zmodload zsh/zprof
 # For debugging zsh startup
 # from - https://medium.com/@dannysmith/little-thing-2-speeding-up-zsh-f1860390f92
-# zmodload zsh/zprof
+# echo "Activating $HOME/.zshrc"
 
 # If you come from bash you might have to change your $PATH.
-export PATH=/usr/local/opt/openssl@1.1/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="/Users/bobrien/.oh-my-zsh"
@@ -12,7 +12,16 @@ export ZSH="/Users/bobrien/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="agnoster"
+
+
+#ZSH_THEME="agnoster-light"
+ZSH_THEME="cobalt2"
+# An attempt to fix garbled chars in Emacs shells (ansi-term, multi-term, etc)
+if [ -n "$INSIDE_EMACS" ]; then
+    export TERM=eterm-256color
+    unset zle_bracketd_paste
+fi
+# End Emacs fix
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -73,17 +82,19 @@ ZSH_THEME="agnoster"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-git
-bundler
-osx
-python
+#bundler
 colored-man-pages
 colorize
-pyenv
-z
-rake
-ruby
-rbenv
+git
+gpg-agent
+#nvm
+osx
+#pyenv
+#python
+#rake
+#ruby
+#rbenv
+#zsh-nvm
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -145,7 +156,6 @@ export RUBY_HOME=/usr/local/opt/ruby/bin
 export CPATH=`xcrun --show-sdk-path`/usr/include
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
 # start pyenv setup
 if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init -)"
@@ -156,22 +166,40 @@ fi
 eval "$(rbenv init -)"
 # end rbenv setup
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-export NVM_DIR=~/.nvm
-source ~/.nvm/nvm.sh
+#export NVM_DIR=~/.nvm
+#source ~/.nvm/nvm.sh
+export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
 # Bottom part of debugging slow zsh startup (see top of this file as well)
 # zprof
-
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/bobrien/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/bobrien/Downloads/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/bobrien/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/bobrien/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
-
-export PATH="/usr/local/opt/qt/bin:$PATH"
-# export PATH="/Users/bobrien/src/depot_tools:$PATH"
-export PATH="/usr/local/opt/tcl-tk/bin:$PATH"
-alias em="emacsclient -c -n -a ''"
+# for AWS console stuff - check ~/.aws for credentials
+autoload bashcompinit && bashcompinit
+complete -C '/usr/local/bin/aws_completer' aws
 alias buau="brew update && brew upgrade"
+# Find running Emacs process
+alias pge="pgrep -fail emacs"
+# Find running Emacs socket
+alias ems="lsof -c Emacs | grep server | tr -s ' ' | cut -d' ' -f8"
+# Find files opened with current Emacs process
+alias emacsfo="lsof -Fn +p $(pgrep Emacs) | tail -n +2 | cut -c2-"
+# Non-GCCEMACs aliases
+alias emd="~/src/gnu-emacs/28/emacs/nextstep/Emacs.app/Contents/MacOS/Emacs --daemon=VANILLAEMACS"
+alias  em="~/src/gnu-emacs/28/emacs/nextstep/Emacs.app/Contents/MacOS/bin/emacsclient -s VANILLAEMACS -c -n -a ''"
+alias emt="~/src/gnu-emacs/28/emacs/nextstep/Emacs.app/Contents/MacOS/bin/emacsclient -s VANILLAEMACS -nw"
+alias emq="~/src/gnu-emacs/28/emacs/nextstep/Emacs.app/Contents/MacOS/Emacs -Q"
+# GCCEMACs aliases
+alias gcemd="~/src/gnu-emacs/28/gccemacs/nextstep/Emacs.app/Contents/MacOS/Emacs --daemon=GCCEMACS"
+alias  gcem="~/src/gnu-emacs/28/gccemacs/nextstep/Emacs.app/Contents/MacOS/bin/emacsclient -s GCCEMACS -c -n -a ''"
+alias gcemt="~/src/gnu-emacs/28/gccemacs/nextstep/Emacs.app/Contents/MacOS/bin/emacsclient -s GCCEMACS -nw"
+alias gcemq="~/src/gnu-emacs/28/gccemacs/nextstep/Emacs.app/Contents/MacOS/Emacs -Q"
+# VIM aliases
 alias vimdiff="nvim -d"
 alias vim="nvim"
 alias vi="nvim"
+alias cdp="cd /Users/bobrien/code/python"
+alias cdg="cd /Users/bobrien/src/gnu-emacs/28/gccemacs"
+#test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+# Add zprof to the end to profile zsh startup times.  
+# Don't forget to add zmodload zsh/zprof to the top of .zshrc
+#zprof
