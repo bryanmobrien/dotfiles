@@ -1,1 +1,0 @@
-/Users/bobrien/.vim/janus/vim/vimrc
